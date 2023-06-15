@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import io.grpc.JavaTimeUtil.toNanosSaturated;
 
 /**
  * The collection of runtime options for a new RPC call.
@@ -163,6 +164,15 @@ public final class CallOptions {
     builder.deadline = deadline;
     return builder.build();
   }
+
+  /**
+   * Returns a new {@code CallOptions} with a deadline that is after the given {@code duration} from
+   * now.
+   */
+  public CallOptions withDeadlineAfter(Duration duration) {
+    return withDeadlineAfter(Deadline.after(toNanosSaturated(delay), TimeUnit.NANOSECONDS));
+  }
+
 
   /**
    * Returns a new {@code CallOptions} with a deadline that is after the given {@code duration} from

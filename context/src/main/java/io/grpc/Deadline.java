@@ -16,6 +16,8 @@
 
 package io.grpc;
 
+import io.grpc.JavaTimeUtil.toNanosSaturated;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
@@ -61,11 +63,50 @@ public final class Deadline implements Comparable<Deadline> {
    * might saturate.
    *
    * @param duration A non-negative duration.
+   * @return A new deadline.
+   */
+  public static Deadline after(Duration duration) {
+    return after(toNanosSaturated(duration), TimeUnit.NANOSECONDS);
+  }
+
+  /**
+   * Create a deadline that will expire at the specified offset based on the {@link #getSystemTicker
+   * system ticker}.
+   *
+   * <p>If the given offset is extraordinarily long, say 100 years, the actual deadline created
+   * might saturate.
+   *
+   * @param duration A non-negative duration.
    * @param units The time unit for the duration.
    * @return A new deadline.
    */
   public static Deadline after(long duration, TimeUnit units) {
     return after(duration, units, SYSTEM_TICKER);
+  }
+
+  /**
+   * Create a deadline that will expire at the specified offset based on the given {@link Ticker}.
+   *
+   * <p>If the given offset is extraordinarily long, say 100 years, the actual deadline created
+   * might saturate.
+   *
+   * <p><strong>CAUTION</strong>: Only deadlines created with the same {@link Ticker} instance can
+   * be compared by methods like {@link #minimum}, {@link #isBefore} and {@link #compareTo}.  Custom
+   * Tickers should only be used in tests where you fake out the clock.  Always use the {@link
+   * #getSystemTicker system ticker} in production, or serious errors may occur.
+   *
+   * <p>This is <strong>EXPERIMENTAL</strong> API and may subject to change.  If you'd like it to be
+   * stabilized or have any feedback, please
+   * <a href="https://github.com/grpc/grpc-java/issues/6030">let us know</a>.
+   *
+   * @param duration A non-negative duration.
+   * @param ticker Where this deadline refer the current time
+   * @return A new deadline.
+   *
+   * @since 1.24.0
+   */
+  public static Deadline after(Duration duration, Ticker ticker) {
+    return after(toNanosSaturated(duration), TimeUnit.NANOSECONDS, ticker);
   }
 
   /**

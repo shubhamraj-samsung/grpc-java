@@ -19,7 +19,9 @@ package io.grpc;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import io.grpc.JavaTimeUtil.toNanosSaturated;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Duration;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
@@ -146,6 +148,21 @@ public final class SynchronizationContext implements Executor {
    * @return an object for checking the status and/or cancel the scheduled task
    */
   public final ScheduledHandle schedule(
+      final Runnable task, Duration delay, ScheduledExecutorService timerService) {
+        return schedule(task, toNanosSaturated(delay), TimeUnit.NANOSECONDS, timerService);
+  }
+
+  /**
+   * Schedules a task to be added and run via {@link #execute} after a delay.
+   *
+   * @param task the task being scheduled
+   * @param delay the delay
+   * @param unit the time unit for the delay
+   * @param timerService the {@code ScheduledExecutorService} that provides delayed execution
+   *
+   * @return an object for checking the status and/or cancel the scheduled task
+   */
+  public final ScheduledHandle schedule(
       final Runnable task, long delay, TimeUnit unit, ScheduledExecutorService timerService) {
     final ManagedRunnable runnable = new ManagedRunnable(task);
     ScheduledFuture<?> future = timerService.schedule(new Runnable() {
@@ -160,6 +177,24 @@ public final class SynchronizationContext implements Executor {
         }
       }, delay, unit);
     return new ScheduledHandle(runnable, future);
+  }
+
+   /**
+   * Schedules a task to be added and run via {@link #execute} after an inital delay and then
+   * repeated after the delay until cancelled.
+   *
+   * @param task the task being scheduled
+   * @param initialDelay the delay before the first run
+   * @param delay the delay after the first run.
+   * @param unit the time unit for the delay
+   * @param timerService the {@code ScheduledExecutorService} that provides delayed execution
+   *
+   * @return an object for checking the status and/or cancel the scheduled task
+   */
+  public final ScheduledHandle scheduleWithFixedDelay(
+      final Runnable task, Duration initialDelay, Duration delay,
+      ScheduledExecutorService timerService) {
+        return scheduleWithFixedDelay(task, toNanosSaturated(initialDelay), toNanosSaturated(delay), TimeUnit.NANOSECONDS, timerService);
   }
 
   /**

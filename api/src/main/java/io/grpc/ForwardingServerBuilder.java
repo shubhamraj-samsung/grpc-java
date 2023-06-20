@@ -18,8 +18,10 @@ package io.grpc;
 
 import com.google.common.base.MoreObjects;
 import com.google.errorprone.annotations.DoNotCall;
+import io.grpc.JavaTimeUtil.toNanosSaturated;
 import java.io.File;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -128,9 +130,19 @@ public abstract class ForwardingServerBuilder<T extends ServerBuilder<T>> extend
   }
 
   @Override
+  public T handshakeTimeout(Duration timeout) {
+    return handshakeTimeout(toNanosSaturated(timeout), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
   public T handshakeTimeout(long timeout, TimeUnit unit) {
     delegate().handshakeTimeout(timeout, unit);
     return thisT();
+  }
+
+  @Override
+  public T keepAliveTime(Duration keepAliveTime) {
+    return keepAliveTime(toNanosSaturated(keepAliveTime), TimeUnit.NANOSECONDS);
   }
 
   @Override
@@ -140,9 +152,19 @@ public abstract class ForwardingServerBuilder<T extends ServerBuilder<T>> extend
   }
 
   @Override
+  public T keepAliveTimeout(Duration keepAliveTimeout) {
+    return keepAliveTimeout(toNanosSaturated(keepAliveTimeout), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
   public T keepAliveTimeout(long keepAliveTimeout, TimeUnit timeUnit) {
     delegate().keepAliveTimeout(keepAliveTimeout, timeUnit);
     return thisT();
+  }
+
+  @Override
+  public T maxConnectionIdle(Duration maxConnectionIdle) {
+    return maxConnectionIdle(toNanosSaturated(maxConnectionIdle), TimeUnit.NANOSECONDS);
   }
 
   @Override
@@ -152,15 +174,30 @@ public abstract class ForwardingServerBuilder<T extends ServerBuilder<T>> extend
   }
 
   @Override
+  public T maxConnectionAge(Duration maxConnectionAge) {
+    return maxConnectionAge(toNanosSaturated(maxConnectionAge), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
   public T maxConnectionAge(long maxConnectionAge, TimeUnit timeUnit) {
     delegate().maxConnectionAge(maxConnectionAge, timeUnit);
     return thisT();
   }
 
   @Override
+  public T maxConnectionAgeGrace(Duration maxConnectionAgeGrace) {
+    return maxConnectionAgeGrace(toNanosSaturated(maxConnectionAgeGrace), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
   public T maxConnectionAgeGrace(long maxConnectionAgeGrace, TimeUnit timeUnit) {
     delegate().maxConnectionAgeGrace(maxConnectionAgeGrace, timeUnit);
     return thisT();
+  }
+
+  @Override
+  public T permitKeepAliveTime(Duration keepAliveTime) {
+    return permitKeepAliveTime(toNanosSaturated(keepAliveTime), TimeUnit.NANOSECONDS);
   }
 
   @Override

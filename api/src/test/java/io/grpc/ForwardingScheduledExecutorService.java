@@ -17,6 +17,8 @@
 package io.grpc;
 
 import com.google.common.util.concurrent.ForwardingExecutorService;
+import io.grpc.JavaTimeUtil.toNanosSaturated;
+import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -31,9 +33,19 @@ abstract class ForwardingScheduledExecutorService extends ForwardingExecutorServ
   protected abstract ScheduledExecutorService delegate();
 
   @Override
+  public <V> ScheduledFuture<V> schedule(Callable<V> callable, Duration delay) {
+    return schedule(callable, toNanosSaturated(delay), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
   public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
     return delegate().schedule(callable, delay, unit);
   }
+
+  @Override
+  public ScheduledFuture<?> schedule(Runnable command, Duration delay) {
+    return schedule(command, toNanosSaturated(delay), TimeUnit.NANOSECONDS);
+  } 
 
   @Override
   public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
@@ -42,8 +54,20 @@ abstract class ForwardingScheduledExecutorService extends ForwardingExecutorServ
 
   @Override
   public ScheduledFuture<?> scheduleAtFixedRate(
+      Runnable command, Duration initialDelay, Duration period) {
+    return scheduleAtFixedRate(command, toNanosSaturated(initialDelay), toNanosSaturated(period), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
+  public ScheduledFuture<?> scheduleAtFixedRate(
       Runnable command, long initialDelay, long period, TimeUnit unit) {
     return delegate().scheduleAtFixedRate(command, initialDelay, period, unit);
+  }
+
+  @Override
+  public ScheduledFuture<?> scheduleWithFixedDelay(
+      Runnable command, Duration initialDelay, Duration delay) {
+    return scheduleWithFixedDelay(command, toNanosSaturated(initialDelay), toNanosSaturated(delay), TimeUnit.NANOSECONDS);
   }
 
   @Override

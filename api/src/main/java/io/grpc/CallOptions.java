@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import io.grpc.JavaTimeUtil.toNanosSaturated;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -162,6 +164,14 @@ public final class CallOptions {
     Builder builder = toBuilder(this);
     builder.deadline = deadline;
     return builder.build();
+  }
+
+  /**
+   * Returns a new {@code CallOptions} with a deadline that is after the given {@code duration} from
+   * now.
+   */
+  public CallOptions withDeadlineAfter(Duration duration) {
+    return withDeadlineAfter(toNanosSaturated(delay), TimeUnit.NANOSECONDS);
   }
 
   /**

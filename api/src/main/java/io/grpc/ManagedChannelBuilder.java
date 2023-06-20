@@ -17,6 +17,7 @@
 package io.grpc;
 
 import com.google.common.base.Preconditions;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -284,6 +285,21 @@ public abstract class ManagedChannelBuilder<T extends ManagedChannelBuilder<T>> 
   @ExperimentalApi("https://github.com/grpc/grpc-java/issues/1704")
   public abstract T compressorRegistry(CompressorRegistry registry);
 
+   /**
+   * Set the duration without ongoing RPCs before going to idle mode.
+   *
+   * <p>In idle mode the channel shuts down all connections, the NameResolver and the
+   * LoadBalancer. A new RPC would take the channel out of idle mode. A channel starts in idle mode.
+   * Defaults to 30 minutes.
+   *
+   * <p>This is an advisory option. Do not rely on any specific behavior related to this option.
+   *
+   * @return this
+   * @since 1.0.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/2022")
+  public abstract T idleTimeout(Duration duration);
+
   /**
    * Set the duration without ongoing RPCs before going to idle mode.
    *
@@ -354,7 +370,38 @@ public abstract class ManagedChannelBuilder<T extends ManagedChannelBuilder<T>> 
    * @throws UnsupportedOperationException if unsupported
    * @since 1.7.0
    */
+  public T keepAliveTime(Duration keepAliveTime) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the time without read activity before sending a keepalive ping. An unreasonably small
+   * value might be increased, and {@code Long.MAX_VALUE} nano seconds or an unreasonably large
+   * value will disable keepalive. Defaults to infinite.
+   *
+   * <p>Clients must receive permission from the service owner before enabling this option.
+   * Keepalives can increase the load on services and are commonly "invisible" making it hard to
+   * notice when they are causing excessive load. Clients are strongly encouraged to use only as
+   * small of a value as necessary.
+   *
+   * @throws UnsupportedOperationException if unsupported
+   * @since 1.7.0
+   */
   public T keepAliveTime(long keepAliveTime, TimeUnit timeUnit) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the time waiting for read activity after sending a keepalive ping. If the time expires
+   * without any read activity on the connection, the connection is considered dead. An unreasonably
+   * small value might be increased. Defaults to 20 seconds.
+   *
+   * <p>This value should be at least multiple times the RTT to allow for lost packets.
+   *
+   * @throws UnsupportedOperationException if unsupported
+   * @since 1.7.0
+   */
+  public T keepAliveTimeout(Duration keepAliveTimeout) {
     throw new UnsupportedOperationException();
   }
 

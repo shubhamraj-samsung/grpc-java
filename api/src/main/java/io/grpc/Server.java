@@ -168,6 +168,16 @@ public abstract class Server {
    *
    * @return whether the server is terminated, as would be done by {@link #isTerminated()}.
    */
+  public abstract boolean awaitTermination(Duration timeout) throws InterruptedException;
+
+  /**
+   * Waits for the server to become terminated, giving up if the timeout is reached.
+   *
+   * <p>Calling this method before {@code start()} or {@code shutdown()} is permitted and does not
+   * change its behavior.
+   *
+   * @return whether the server is terminated, as would be done by {@link #isTerminated()}.
+   */
   public abstract boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException;
 
   /**

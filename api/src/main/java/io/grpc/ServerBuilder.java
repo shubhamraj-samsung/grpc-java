@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -238,6 +239,20 @@ public abstract class ServerBuilder<T extends ServerBuilder<T>> {
    * @since 1.8.0
    */
   @ExperimentalApi("https://github.com/grpc/grpc-java/issues/3706")
+  public T handshakeTimeout(Duration timeout) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the permitted time for new connections to complete negotiation handshakes before being
+   * killed.
+   *
+   * @return this
+   * @throws IllegalArgumentException if timeout is negative
+   * @throws UnsupportedOperationException if unsupported
+   * @since 1.8.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/3706")
   public T handshakeTimeout(long timeout, TimeUnit unit) {
     throw new UnsupportedOperationException();
   }
@@ -252,7 +267,37 @@ public abstract class ServerBuilder<T extends ServerBuilder<T>> {
    * @since 1.47.0
    */
   @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
+  public T keepAliveTime(Duration keepAliveTime) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the time without read activity before sending a keepalive ping. An unreasonably small
+   * value might be increased, and {@code Long.MAX_VALUE} nano seconds or an unreasonably large
+   * value will disable keepalive. The typical default is two hours when supported.
+   *
+   * @throws IllegalArgumentException if time is not positive
+   * @throws UnsupportedOperationException if unsupported
+   * @since 1.47.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
   public T keepAliveTime(long keepAliveTime, TimeUnit timeUnit) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets a time waiting for read activity after sending a keepalive ping. If the time expires
+   * without any read activity on the connection, the connection is considered dead. An unreasonably
+   * small value might be increased. Defaults to 20 seconds when supported.
+   *
+   * <p>This value should be at least multiple times the RTT to allow for lost packets.
+   *
+   * @throws IllegalArgumentException if timeout is not positive
+   * @throws UnsupportedOperationException if unsupported
+   * @since 1.47.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
+  public T keepAliveTimeout(Duration keepAliveTimeout) {
     throw new UnsupportedOperationException();
   }
 
@@ -284,7 +329,38 @@ public abstract class ServerBuilder<T extends ServerBuilder<T>> {
    * @since 1.47.0
    */
   @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
+  public T maxConnectionIdle(Duration maxConnectionIdle) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the maximum connection idle time, connections being idle for longer than which will be
+   * gracefully terminated. Idleness duration is defined since the most recent time the number of
+   * outstanding RPCs became zero or the connection establishment. An unreasonably small value might
+   * be increased. {@code Long.MAX_VALUE} nano seconds or an unreasonably large value will disable
+   * max connection idle.
+   *
+   * @throws IllegalArgumentException if idle is not positive
+   * @throws UnsupportedOperationException if unsupported
+   * @since 1.47.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
   public T maxConnectionIdle(long maxConnectionIdle, TimeUnit timeUnit) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the maximum connection age, connections lasting longer than which will be gracefully
+   * terminated. An unreasonably small value might be increased. A random jitter of +/-10% will be
+   * added to it. {@code Long.MAX_VALUE} nano seconds or an unreasonably large value will disable
+   * max connection age.
+   *
+   * @throws IllegalArgumentException if age is not positive
+   * @throws UnsupportedOperationException if unsupported
+   * @since 1.47.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
+  public T maxConnectionAge(Duration maxConnectionAge) {
     throw new UnsupportedOperationException();
   }
 
@@ -315,7 +391,44 @@ public abstract class ServerBuilder<T extends ServerBuilder<T>> {
    * @since 1.47.0
    */
   @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
+  public T maxConnectionAgeGrace(Duration maxConnectionAgeGrace) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the grace time for the graceful connection termination. Once the max connection age
+   * is reached, RPCs have the grace time to complete. RPCs that do not complete in time will be
+   * cancelled, allowing the connection to terminate. {@code Long.MAX_VALUE} nano seconds or an
+   * unreasonably large value are considered infinite.
+   *
+   * @throws IllegalArgumentException if grace is negative
+   * @throws UnsupportedOperationException if unsupported
+   * @see #maxConnectionAge(long, TimeUnit)
+   * @since 1.47.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
   public T maxConnectionAgeGrace(long maxConnectionAgeGrace, TimeUnit timeUnit) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Specify the most aggressive keep-alive time clients are permitted to configure. The server will
+   * try to detect clients exceeding this rate and when detected will forcefully close the
+   * connection. The typical default is 5 minutes when supported.
+   *
+   * <p>Even though a default is defined that allows some keep-alives, clients must not use
+   * keep-alive without approval from the service owner. Otherwise, they may experience failures in
+   * the future if the service becomes more restrictive. When unthrottled, keep-alives can cause a
+   * significant amount of traffic and CPU usage, so clients and servers should be conservative in
+   * what they use and accept.
+   *
+   * @throws IllegalArgumentException if time is negative
+   * @throws UnsupportedOperationException if unsupported
+   * @see #permitKeepAliveWithoutCalls(boolean)
+   * @since 1.47.0
+   */
+  @ExperimentalApi("https://github.com/grpc/grpc-java/issues/9009")
+  public T permitKeepAliveTime(Duration keepAliveTime) {
     throw new UnsupportedOperationException();
   }
 

@@ -18,6 +18,8 @@ package io.grpc;
 
 import com.google.common.base.MoreObjects;
 import com.google.errorprone.annotations.DoNotCall;
+import io.grpc.JavaTimeUtil.toNanosSaturated;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -148,6 +150,11 @@ public abstract class ForwardingChannelBuilder<T extends ForwardingChannelBuilde
   }
 
   @Override
+  public T idleTimeout(Duration value) {
+    return idleTimeout(toNanosSaturated(value), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
   public T idleTimeout(long value, TimeUnit unit) {
     delegate().idleTimeout(value, unit);
     return thisT();
@@ -166,9 +173,19 @@ public abstract class ForwardingChannelBuilder<T extends ForwardingChannelBuilde
   }
 
   @Override
+  public T keepAliveTime(Duration keepAliveTime) {
+    return keepAliveTime(toNanosSaturated(keepAliveTime), TimeUnit.NANOSECONDS);
+  }
+
+  @Override
   public T keepAliveTime(long keepAliveTime, TimeUnit timeUnit) {
     delegate().keepAliveTime(keepAliveTime, timeUnit);
     return thisT();
+  }
+
+  @Override
+  public T keepAliveTimeout(Duration keepAliveTimeout) {
+    return keepAliveTimeout(toNanosSaturated(keepAliveTimeout), TimeUnit.NANOSECONDS);
   }
 
   @Override
